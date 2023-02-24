@@ -66,7 +66,7 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 		perror("fork");
 		exit(0);
 	}
-	if(pid == 0)
+	if(pid == 0 && (input_fd >= 0 && output_fd >= 0))
 	{
 		dup2(input_fd, STDIN_FILENO);
 		dup2(output_fd, STDOUT_FILENO);
@@ -104,12 +104,10 @@ int main(int argc, char **argv)
 	{
 		args1 = pipex_split(argv[2], ' ');
 		args2 = pipex_split(argv[3], ' ');
-		ft_printf("%s\n", args2[1]);
 		file1_fd = open(argv[1], O_RDONLY);
 		if (file1_fd < 0)
 			perror("Error");
 		file2_fd = open(argv[argc - 1], O_RDWR | O_TRUNC | O_CREAT, 0664);
-
 		if (file2_fd < 0)
 			perror("Error");
 		if(pipe(pipefd) == -1)
