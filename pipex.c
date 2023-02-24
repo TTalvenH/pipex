@@ -118,6 +118,11 @@ int main(int argc, char **argv)
 		if (file1_fd >= 0)
 		{
 			pid1 = child_execve(args1, file1_fd, pipefd[1], pipefd[0]);
+			if (!pid1)
+			{
+				ft_printf("Hello\n");
+				return (-1);
+			}
 		}
 		pid2 = child_execve(args2, pipefd[0], file2_fd, pipefd[1]);
 		
