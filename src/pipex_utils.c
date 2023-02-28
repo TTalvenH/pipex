@@ -31,18 +31,26 @@ void	free_array(char **arr)
 int	close_free_wait(t_pipex *var)
 {
 	int	wstatus;
+	int	status;
 
+	status = 0;
 	close(var->file1_fd);
 	close(var->file2_fd);
 	close(var->pipefd[0]);
 	close(var->pipefd[1]);
-	free_array(var->args1);
-	free_array(var->args2);
 	waitpid(var->pid1, &wstatus, WUNTRACED | WCONTINUED);
 	if (wstatus)
-		return (-1);
+	{
+		ft_printf_fd(STDERR_FILENO, "Couldn't execute '%s'\n", var->args1[0]);
+		status = -1;
+	}
 	waitpid(var->pid2, &wstatus, WUNTRACED | WCONTINUED);
 	if (wstatus)
-		return (-1);
-	return (0);
+	{
+		ft_printf_fd(STDERR_FILENO, "Couldn't execute '%s'\n", var->args2[0]);
+		status = -1;
+	}
+	free_array(var->args1);
+	free_array(var->args2);
+	return (status);
 }
