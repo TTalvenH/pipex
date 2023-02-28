@@ -70,7 +70,6 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 		close(input_fd);
 		close(close_fd);
 		execve(find_cmd_path(arg[0]), arg, 0);
-		ft_printf_fd(STDERR_FILENO, "Error: could not execute '%s'\n", arg[0]);
 		exit(-1);
 	}
 	return (pid);
