@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "pipex.h"
-#include "libft/libft.h"
+#include "../libft/libft.h"
 
 char	*check_paths(char **paths, char *cmd)
 {

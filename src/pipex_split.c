@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include "libft/libft.h"
+#include "../libft/libft.h"
 
 static int	count_words(char *str, char chr)
 {
