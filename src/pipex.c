@@ -95,9 +95,9 @@ int	init_var(t_pipex *var, char **argv)
 	var->file1_fd = open(argv[1], O_RDONLY);
 	if (var->file1_fd < 0)
 		perror(argv[1]);
-	var->file2_fd = open(argv[5], O_RDWR | O_TRUNC | O_CREAT, 0664);
+	var->file2_fd = open(argv[4], O_RDWR | O_TRUNC | O_CREAT, 0664);
 	if (var->file2_fd < 0)
-		perror(argv[5]);
+		perror(argv[4]);
 	return (0);
 }
 
