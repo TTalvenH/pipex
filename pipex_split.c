@@ -1,10 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex_split.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ttalvenh <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/28 13:15:01 by ttalvenh          #+#    #+#             */
+/*   Updated: 2023/02/28 13:15:03 by ttalvenh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "pipex.h"
 #include "libft/libft.h"
 
 static int	count_words(char *str, char chr)
 {
 	int	wordcount;
 	int	i;
-	int single_quote;
+	int	single_quote;
 
 	single_quote = 0;
 	i = 0;
@@ -13,7 +26,7 @@ static int	count_words(char *str, char chr)
 	{
 		if (str[i] == chr)
 			i++;
-		if (str[i] == '\'')
+		if (str[i] == '\'' && str[i] != '\0')
 			single_quote = 1;
 		while ((str[i] != chr || single_quote) && str[i] != '\0')
 		{
@@ -24,14 +37,13 @@ static int	count_words(char *str, char chr)
 		if (str[i - 1] != chr)
 			wordcount++;
 	}
-	// ft_printf("%d\n", wordcount);
 	return (wordcount);
 }
 
 static int	count_wordlen(char *s, char c)
 {
 	int	count;
-	int single_quote;
+	int	single_quote;
 
 	single_quote = 0;
 	count = 0;
@@ -53,31 +65,39 @@ static int	count_wordlen(char *s, char c)
 	return (count);
 }
 
+char	**error_free(char **array, int size)
+{	
+	size--;
+	while (size > -1)
+		free(array[size--]);
+	free(array);
+	return (NULL);
+}
+
 char	**pipex_split(char const *s, char c)
 {
-	int		i;
-	int		wordcount;
-	int		wordlen;
-	char	**array;
+	t_split	var;
 
-	wordcount = count_words((char *)s, c);
-	i = 0;
-	array = malloc(sizeof(char *) * (wordcount + 1));
-	if (array == NULL)
+	var.i = 0;
+	var.wordcount = count_words((char *)s, c);
+	if (!var.wordcount)
 		return (NULL);
-	while (i < wordcount)
+	var.array = malloc(sizeof(char *) * (var.wordcount + 1));
+	if (!var.array)
+		return (NULL);
+	while (var.i < var.wordcount)
 	{
 		while (*s == c || *s == '\'')
 			s++;
-		wordlen = count_wordlen((char *)s, c);
-		array[i] = malloc (sizeof(char) * (wordlen + 1));
-		if (array [i] == NULL)
-			return (NULL);
-		array[i] = ft_memcpy(array[i], s, wordlen);
-		array[i++][wordlen] = '\0';
+		var.wordlen = count_wordlen((char *)s, c);
+		var.array[var.i] = malloc (sizeof(char) * (var.wordlen + 1));
+		if (var.array [var.i] == NULL)
+			return (error_free(var.array, var.i));
+		var.array[var.i] = ft_memcpy(var.array[var.i], s, var.wordlen);
+		var.array[var.i++][var.wordlen] = '\0';
 		while (*s != c && *s != '\0')
 			s++;
 	}
-	array[i] = NULL;
-	return (array);
+	var.array[var.i] = NULL;
+	return (var.array);
 }
