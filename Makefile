@@ -1,7 +1,7 @@
 NAME = pipex
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
-SRC = pipex.c pipex_split.c
+SRC = pipex.c pipex_utils.c pipex_split.c
 OBJ = $(SRC:.c=.o)
 LIBFT = libft.a
 
@@ -11,7 +11,7 @@ $(LIBFT):
 	make -C libft
 
 $(NAME): $(SRC)
-	$(CC) $(SRC) ./libft/libft.a -Ilibft -Llibft -o $(NAME)
+	$(CC) $(SRC) ./libft/libft.a -Ilibft -Llibft -fsanitize=address -o $(NAME)
 
 %.o: %.c
 	$(CC) -Wall -Wextra -Werror -c $< -o $@

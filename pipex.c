@@ -1,28 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ttalvenh <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/28 13:14:39 by ttalvenh          #+#    #+#             */
+/*   Updated: 2023/02/28 13:14:41 by ttalvenh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include "pipex.h"
 #include "libft/libft.h"
 
-
-void	free_array(char **arr)
-{
-	int i;
-
-	i = 0;
-	while(*arr != NULL)
-	{
-		free(*arr++);
-		i++;
-	}
-	free(arr - i);
-}
-
 char	*check_paths(char **paths, char *cmd)
 {
-	int i;
-	char *cmd_path;
+	int		i;
+	char	*cmd_path;
 
 	cmd_path = NULL;
 	i = 0;
@@ -42,31 +39,30 @@ char	*check_paths(char **paths, char *cmd)
 
 char	*find_cmd_path(char *cmd)
 {
-	extern char **environ;
-	int		i;
-	char	**paths;
-	char	*cmd_path;
+	extern char	**environ;
+	int			i;
+	char		**paths;
+	char		*cmd_path;
 
 	i = 0;
 	while (ft_strncmp(environ[i], "PATH", 4) != 0 && environ[i] != NULL)
 		i++;
 	paths = ft_split(environ[i] + 5, ':');
 	cmd_path = check_paths(paths, cmd);
-	free(cmd);
 	return (cmd_path);
 }
 
 int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 {
-	int pid;
+	int	pid;
 
 	pid = fork();
-	if(pid == -1)
+	if (pid == -1)
 	{
 		perror("fork");
 		exit(0);
 	}
-	if(pid == 0 && (input_fd >= 0 && output_fd >= 0))
+	if (pid == 0 && (input_fd >= 0 && output_fd >= 0))
 	{
 		dup2(input_fd, STDIN_FILENO);
 		dup2(output_fd, STDOUT_FILENO);
@@ -75,65 +71,58 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 		close(close_fd);
 		execve(find_cmd_path(arg[0]), arg, 0);
 		ft_printf_fd(STDERR_FILENO, "Error: could not execute '%s'\n", arg[0]);
+		exit(-1);
 	}
 	return (pid);
 }
 
-char	**split_args(char *arg)
+int	init_var(t_pipex *var, char **argv)
 {
-	char	**args;
-
-	args = pipex_split(arg, ' ');
-	while(*args != NULL)
-		ft_printf("%s\n", *args++);
-	return (args);
+	var->args1 = pipex_split(argv[2], ' ');
+	if (var->args1 == NULL)
+	{
+		perror("cmd1");
+		return (-1);
+	}
+	var->args2 = pipex_split(argv[3], ' ');
+	if (var->args2 == NULL)
+	{
+		perror("cmd2");
+		if (var->args1)
+			free_array(var->args1);
+		return (-1);
+	}
+	var->file1_fd = open(argv[1], O_RDONLY);
+	if (var->file1_fd < 0)
+		perror(argv[1]);
+	var->file2_fd = open(argv[5], O_RDWR | O_TRUNC | O_CREAT, 0664);
+	if (var->file2_fd < 0)
+		perror(argv[5]);
+	return (0);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	int	pipefd[2];
-	int	file1_fd;
-	int file2_fd;
-	int	pid1;
-	int pid2;
-	char	**args1;
-	char	**args2;
-
+	t_pipex	var;
 
 	if (argc == 5)
 	{
-		args1 = pipex_split(argv[2], ' ');
-		args2 = pipex_split(argv[3], ' ');
-		file1_fd = open(argv[1], O_RDONLY);
-		if (file1_fd < 0)
-			perror("Error");
-		file2_fd = open(argv[argc - 1], O_RDWR | O_TRUNC | O_CREAT, 0664);
-		if (file2_fd < 0)
-			perror("Error");
-		if(pipe(pipefd) == -1)
+		if (init_var(&var, argv) < 0)
+			return (-1);
+		if (pipe(var.pipefd) == 0)
 		{
-			perror("pipe");
-			exit(0);
-		}
-		if (file1_fd >= 0)
-		{
-			pid1 = child_execve(args1, file1_fd, pipefd[1], pipefd[0]);
-			if (!pid1)
-			{
-				ft_printf("Hello\n");
+			if (var.file1_fd >= 0)
+				var.pid1 = child_execve(var.args1, var.file1_fd,
+						var.pipefd[1], var.pipefd[0]);
+			if (var.file2_fd >= 0)
+				var.pid2 = child_execve(var.args2, var.pipefd[0],
+						var.file2_fd, var.pipefd[1]);
+			if (close_free_wait(&var) != 0)
 				return (-1);
-			}
 		}
-		pid2 = child_execve(args2, pipefd[0], file2_fd, pipefd[1]);
-		
-		close(file1_fd);
-		close(file2_fd);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		waitpid(pid1, NULL, 0);
-		waitpid(pid2, NULL, 0);
+		else
+			perror("pipe");
 	}
 	else
-		split_args(argv[1]);
-	return 0;
+		ft_printf_fd(2, "Like this: ./pipex file1 \"cmd1\" \"cmd2\" file2\n");
 }
