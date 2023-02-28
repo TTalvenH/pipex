@@ -11,7 +11,7 @@ $(LIBFT):
 	make -C ../libft
 
 $(NAME): $(SRC)
-	$(CC) $(SRC) -lft -I../libft -L../libft -o $(NAME)
+	$(CC) $(SRC) -lft -I../libft -L../libft -g -o $(NAME)
 
 %.o: %.c
 	$(CC) -Wall -Wextra -Werror -c $< -o $@

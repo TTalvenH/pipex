@@ -74,29 +74,43 @@ char	**error_free(char **array, int size)
 	return (NULL);
 }
 
+int	split_init(t_split *var, char const *s, char c)
+{
+	var->single_quote = 0;
+	var->i = 0;
+	var->wordcount = count_words((char *)s, c);
+	if (!var->wordcount)
+		return (-1);
+	var->array = malloc(sizeof(char *) * (var->wordcount + 1));
+	if (!var->array)
+		return (-1);
+	return (0);
+}
+
 char	**pipex_split(char const *s, char c)
 {
 	t_split	var;
 
-	var.i = 0;
-	var.wordcount = count_words((char *)s, c);
-	if (!var.wordcount)
-		return (NULL);
-	var.array = malloc(sizeof(char *) * (var.wordcount + 1));
-	if (!var.array)
+	if (split_init(&var, s, c))
 		return (NULL);
 	while (var.i < var.wordcount)
 	{
 		while (*s == c || *s == '\'')
 			s++;
+		if (*(s -1) == '\'' || *s == '\'')
+			var.single_quote = 1;
 		var.wordlen = count_wordlen((char *)s, c);
 		var.array[var.i] = malloc (sizeof(char) * (var.wordlen + 1));
 		if (var.array [var.i] == NULL)
 			return (error_free(var.array, var.i));
 		var.array[var.i] = ft_memcpy(var.array[var.i], s, var.wordlen);
 		var.array[var.i++][var.wordlen] = '\0';
-		while (*s != c && *s != '\0')
+		while ((*s != c && *s != '\0') || var.single_quote)
+		{
+			if (*s == '\'')
+				var.single_quote = 0;
 			s++;
+		}
 	}
 	var.array[var.i] = NULL;
 	return (var.array);

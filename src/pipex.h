@@ -29,6 +29,7 @@ typedef struct s_split
 	int		i;
 	int		wordcount;
 	int		wordlen;
+	int		single_quote;
 	char	**array;
 }t_split;
 
