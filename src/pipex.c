@@ -80,13 +80,13 @@ int	init_var(t_pipex *var, char **argv)
 	var->args1 = pipex_split(argv[2], ' ');
 	if (var->args1 == NULL)
 	{
-		perror("cmd1");
+		ft_printf_fd(STDERR_FILENO, "Error: cmd1\n");
 		return (-1);
 	}
 	var->args2 = pipex_split(argv[3], ' ');
 	if (var->args2 == NULL)
 	{
-		perror("cmd2");
+		ft_printf_fd(STDERR_FILENO, "Error: cmd2\n");
 		if (var->args1)
 			free_array(var->args1);
 		return (-1);
@@ -116,8 +116,7 @@ int	main(int argc, char **argv)
 			if (var.file2_fd >= 0)
 				var.pid2 = child_execve(var.args2, var.pipefd[0],
 						var.file2_fd, var.pipefd[1]);
-			if (close_free_wait(&var) != 0)
-				return (-1);
+			return (close_free_wait(&var));
 		}
 		else
 			perror("pipe");
