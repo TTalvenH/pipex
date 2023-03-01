@@ -37,7 +37,7 @@ char	*check_paths(char **paths, char *cmd)
 		free(cmd_path);
 	}	
 	free_array(paths);
-	return (NULL);
+	return (cmd_path);
 }
 
 char	*find_cmd_path(char *cmd)
