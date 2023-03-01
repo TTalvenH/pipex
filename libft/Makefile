@@ -20,6 +20,7 @@ $(NAME): $(OBJ)
 	ar rc $(NAME) $(OBJ)
 
 $(OBJ_DIR)/%.o: %.c
+	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -g -c $< -o $@
 
 clean:
