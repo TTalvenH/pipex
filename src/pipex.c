@@ -45,11 +45,15 @@ char	*find_cmd_path(char *cmd)
 	char		*cmd_path;
 
 	i = 0;
-	while (ft_strncmp(environ[i], "PATH", 4) != 0 && environ[i] != NULL)
-		i++;
-	paths = ft_split(environ[i] + 5, ':');
-	cmd_path = check_paths(paths, cmd);
-	return (cmd_path);
+	if (access(cmd, F_OK) != 0)
+	{
+		while (ft_strncmp(environ[i], "PATH", 4) != 0 && environ[i] != NULL)
+			i++;
+		paths = ft_split(environ[i] + 5, ':');
+		cmd_path = check_paths(paths, cmd);
+		return (cmd_path);
+	}
+	return (cmd);
 }
 
 int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
