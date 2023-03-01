@@ -33,12 +33,15 @@ int	close_free_wait(t_pipex *var)
 {
 	int	wstatus;
 
+	wstatus = 0;
 	close(var->file1_fd);
 	close(var->file2_fd);
 	close(var->pipefd[0]);
 	close(var->pipefd[1]);
-	waitpid(var->pid1, &wstatus, 0);
-	waitpid(var->pid2, &wstatus, 0);
+	if (var->pid1)
+		waitpid(var->pid1, &wstatus, 0);
+	if (var->pid2)
+		waitpid(var->pid2, &wstatus, 0);
 	free_array(var->args1);
 	free_array(var->args2);
 	return (wstatus);
