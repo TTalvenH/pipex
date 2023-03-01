@@ -23,7 +23,7 @@ char	*check_paths(char **paths, char *cmd)
 
 	cmd_path = NULL;
 	i = 0;
-	while (paths[i] != '\0')
+	while (paths[i] != NULL)
 	{
 		cmd_path = ft_strjoin_slash(paths[i++], cmd);
 		if (access(cmd_path, F_OK) == 0)
