@@ -13,8 +13,11 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 #include "pipex.h"
 #include "../libft/libft.h"
+
 
 char	*check_paths(char **paths, char *cmd)
 {
@@ -74,6 +77,7 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 		close(input_fd);
 		close(close_fd);
 		execve(find_cmd_path(arg[0]), arg, 0);
+		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), arg[0]);
 		exit(-1);
 	}
 	return (pid);
@@ -97,10 +101,10 @@ int	init_var(t_pipex *var, char **argv)
 	}
 	var->file1_fd = open(argv[1], O_RDONLY);
 	if (var->file1_fd < 0)
-		perror(argv[1]);
+		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[1]);
 	var->file2_fd = open(argv[4], O_RDWR | O_TRUNC | O_CREAT, 0664);
 	if (var->file2_fd < 0)
-		perror(argv[4]);
+		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[4]);
 	return (0);
 }
 
@@ -108,6 +112,8 @@ int	main(int argc, char **argv)
 {
 	t_pipex	var;
 
+	var.pid1 = 0;
+	var.pid2 = 0;
 	if (argc == 5)
 	{
 		if (init_var(&var, argv) < 0)

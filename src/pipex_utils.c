@@ -38,11 +38,7 @@ int	close_free_wait(t_pipex *var)
 	close(var->pipefd[0]);
 	close(var->pipefd[1]);
 	waitpid(var->pid1, &wstatus, 0);
-	if (wstatus)
-		ft_printf_fd(STDERR_FILENO, "Couldn't execute '%s'\n", var->args1[0]);
 	waitpid(var->pid2, &wstatus, 0);
-	if (wstatus)
-		ft_printf_fd(STDERR_FILENO, "Couldn't execute '%s'\n", var->args2[0]);
 	free_array(var->args1);
 	free_array(var->args2);
 	return (wstatus);
