@@ -16,6 +16,7 @@ $(NAME): $(OBJ)
 	$(CC) $(OBJ) -lft -Ilibft -Llibft -o $(NAME)
 
 $(OBJ_DIR)/%.o: %.c
+	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 	
 clean:
