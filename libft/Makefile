@@ -21,10 +21,10 @@ $(NAME): $(OBJ)
 
 $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -g -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-		rm -f $(OBJ)
+		rm -rf $(OBJ_DIR)
 
 fclean: clean
 		rm -f $(NAME)
