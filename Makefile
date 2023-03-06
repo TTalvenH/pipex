@@ -20,7 +20,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 	
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(OBJ_DIR)
 	make clean -C libft
 
 fclean: 	clean
