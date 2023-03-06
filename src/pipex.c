@@ -115,10 +115,10 @@ int	main(int argc, char **argv)
 		init_var(&var, argv);
 		if (pipe(var.pipefd) == 0)
 		{
-			if (var.file1_fd >= 0)
+			if (var.file1_fd >= 0 && var.args1)
 				var.pid1 = child_execve(var.args1, var.file1_fd,
 						var.pipefd[1], var.pipefd[0]);
-			if (var.file2_fd >= 0)
+			if (var.file2_fd >= 0 && var.args2)
 				var.pid2 = child_execve(var.args2, var.pipefd[0],
 						var.file2_fd, var.pipefd[1]);
 			return (close_free_wait(&var));
