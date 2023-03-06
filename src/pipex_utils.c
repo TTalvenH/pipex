@@ -29,6 +29,15 @@ void	free_array(char **arr)
 	free(arr - i);
 }
 
+char	**error_free(char **array, int size)
+{	
+	size--;
+	while (size > -1)
+		free(array[size--]);
+	free(array);
+	return (NULL);
+}
+
 int	close_free_wait(t_pipex *var)
 {
 	int	wstatus;

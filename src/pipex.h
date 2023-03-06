@@ -36,5 +36,6 @@ typedef struct s_split
 char	**pipex_split(char const *s, char c);
 void	free_array(char **arr);
 int		close_free_wait(t_pipex *var);
+char	**error_free(char **array, int size);
 
 #endif
