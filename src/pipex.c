@@ -84,6 +84,12 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 
 int	init_var(t_pipex *var, char **argv)
 {
+	var->file1_fd = open(argv[1], O_RDONLY);
+	if (var->file1_fd < 0)
+		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[1]);
+	var->file2_fd = open(argv[4], O_RDWR | O_TRUNC | O_CREAT, 0664);
+	if (var->file2_fd < 0)
+		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[4]);
 	var->args1 = pipex_split(argv[2], ' ');
 	if (var->args1 == NULL)
 	{
@@ -98,12 +104,6 @@ int	init_var(t_pipex *var, char **argv)
 			free_array(var->args1);
 		return (-1);
 	}
-	var->file1_fd = open(argv[1], O_RDONLY);
-	if (var->file1_fd < 0)
-		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[1]);
-	var->file2_fd = open(argv[4], O_RDWR | O_TRUNC | O_CREAT, 0664);
-	if (var->file2_fd < 0)
-		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[4]);
 	return (0);
 }
 
