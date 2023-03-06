@@ -91,7 +91,7 @@ int	init_var(t_pipex *var, char **argv)
 	if (var->file2_fd < 0)
 		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[4]);
 	var->args1 = pipex_split(argv[2], ' ');
-	if (var->args1 == NULL)
+	if (var->args1 == NULL && var->file1_fd >= 0)
 	{
 		ft_printf_fd(STDERR_FILENO, "Error: cmd1\n");
 		return (-1);
