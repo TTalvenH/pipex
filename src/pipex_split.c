@@ -40,12 +40,12 @@ static int	count_words(char *str, char chr)
 	return (wordcount);
 }
 
-static int	count_wordlen(char *s, char c)
+static int	count_wordlen(char *s, char c, t_split *var)
 {
 	int	count;
 	int	single_quote;
 
-	single_quote = 0;
+	single_quote = var->single_quote;
 	count = 0;
 	while ((*s != c || single_quote) && *s != '\0')
 	{
@@ -56,22 +56,13 @@ static int	count_wordlen(char *s, char c)
 		}
 		else
 		{
-			if (*(s - 1) == '\'')
+			if (*(s - 1) == '\'' && !single_quote)
 				single_quote = !single_quote;
 			count++;
 			s++;
 		}
 	}
 	return (count);
-}
-
-char	**error_free(char **array, int size)
-{	
-	size--;
-	while (size > -1)
-		free(array[size--]);
-	free(array);
-	return (NULL);
 }
 
 int	split_init(t_split *var, char const *s, char c)
@@ -87,6 +78,17 @@ int	split_init(t_split *var, char const *s, char c)
 	return (0);
 }
 
+const char	*check_single_quote(const char *s, char c, t_split *var)
+{
+	while ((*s == c || (*s == '\'' && *(s -1) != '\'')) && !var->single_quote)
+	{
+		if (*s == '\'')
+			var->single_quote = 1;
+		s++;
+	}
+	return (s);
+}
+
 char	**pipex_split(char const *s, char c)
 {
 	t_split	var;
@@ -95,17 +97,14 @@ char	**pipex_split(char const *s, char c)
 		return (NULL);
 	while (var.i < var.wordcount)
 	{
-		while (*s == c || *s == '\'')
-			s++;
-		if (*(s -1) == '\'' || *s == '\'')
-			var.single_quote = 1;
-		var.wordlen = count_wordlen((char *)s, c);
+		s = check_single_quote(s, c, &var);
+		var.wordlen = count_wordlen((char *)s, c, &var);
 		var.array[var.i] = malloc (sizeof(char) * (var.wordlen + 1));
 		if (var.array [var.i] == NULL)
 			return (error_free(var.array, var.i));
 		var.array[var.i] = ft_memcpy(var.array[var.i], s, var.wordlen);
 		var.array[var.i++][var.wordlen] = '\0';
-		while ((*s != c && *s != '\0') || var.single_quote)
+		while ((*s != c || var.single_quote) && *s != '\0')
 		{
 			if (*s == '\'')
 				var.single_quote = 0;
