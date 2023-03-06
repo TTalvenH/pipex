@@ -82,7 +82,7 @@ int	child_execve(char **arg, int input_fd, int output_fd, int close_fd)
 	return (pid);
 }
 
-int	init_var(t_pipex *var, char **argv)
+void	init_var(t_pipex *var, char **argv)
 {
 	var->file1_fd = open(argv[1], O_RDONLY);
 	if (var->file1_fd < 0)
@@ -90,21 +90,18 @@ int	init_var(t_pipex *var, char **argv)
 	var->file2_fd = open(argv[4], O_RDWR | O_TRUNC | O_CREAT, 0664);
 	if (var->file2_fd < 0)
 		ft_printf_fd(2, "pipex: %s: %s\n", strerror(errno), argv[4]);
-	var->args1 = pipex_split(argv[2], ' ');
-	if (var->args1 == NULL && var->file1_fd >= 0)
+	if (var->file1_fd >= 0)
 	{
-		ft_printf_fd(STDERR_FILENO, "Error: cmd1\n");
-		return (-1);
+		var->args1 = pipex_split(argv[2], ' ');
+		if (var->args1 == NULL)
+			ft_printf_fd(STDERR_FILENO, "Error: cmd1\n");
 	}
-	var->args2 = pipex_split(argv[3], ' ');
-	if (var->args2 == NULL)
+	if (var->file2_fd >= 0)
 	{
-		ft_printf_fd(STDERR_FILENO, "Error: cmd2\n");
-		if (var->args1)
-			free_array(var->args1);
-		return (-1);
+		var->args2 = pipex_split(argv[3], ' ');
+		if (var->args2 == NULL)
+			ft_printf_fd(STDERR_FILENO, "Error: cmd2\n");
 	}
-	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -115,8 +112,7 @@ int	main(int argc, char **argv)
 	var.pid2 = 0;
 	if (argc == 5)
 	{
-		if (init_var(&var, argv) < 0)
-			return (-1);
+		init_var(&var, argv);
 		if (pipe(var.pipefd) == 0)
 		{
 			if (var.file1_fd >= 0)

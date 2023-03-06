@@ -51,7 +51,9 @@ int	close_free_wait(t_pipex *var)
 		waitpid(var->pid1, &wstatus, 0);
 	if (var->pid2)
 		waitpid(var->pid2, &wstatus, 0);
-	free_array(var->args1);
-	free_array(var->args2);
+	if (var->args1)
+		free_array(var->args1);
+	if (var->args2)
+		free_array(var->args2);
 	return (wstatus);
 }
