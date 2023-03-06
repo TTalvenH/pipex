@@ -18,7 +18,6 @@
 #include "pipex.h"
 #include "../libft/libft.h"
 
-
 char	*check_paths(char **paths, char *cmd)
 {
 	int		i;
