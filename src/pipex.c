@@ -16,7 +16,7 @@
 #include <string.h>
 #include <errno.h>
 #include "pipex.h"
-#include "../libft/libft.h"
+#include "libft.h"
 
 char	*check_paths(char **paths, char *cmd)
 {

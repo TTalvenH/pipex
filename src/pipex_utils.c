@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "pipex.h"
-#include "../libft/libft.h"
+#include "libft.h"
 #include <sys/wait.h>
 
 void	free_array(char **arr)
